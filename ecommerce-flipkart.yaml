@@ -1,0 +1,21 @@
+---
+- hosts: webservers
+  user: ansible
+  become: true
+  connection: ssh
+  tasks:
+
+  - name: Install required packages
+    action: yum name=git,httpd state=present
+
+  - name: Ensure httpd is running and enabled
+    action: service name=httpd state=started
+
+  - name: Clone Flipkart Clone repository
+    action: git repo=https://github.com/Msocial123/Flipkart-Clone.git dest=/home/ansible/Flipkart-Clone version=master force=yes
+
+  - name: Copy application code to web root
+    action: copy src=/home/ansible/Flipkart-Clone/ dest=/var/www/html/ owner=apache group=apache mode=0755 remote_src=yes
+
+  - name: Set correct permissions for web root
+    action: file path=/var/www/html owner=apache group=apache recurse=yes
